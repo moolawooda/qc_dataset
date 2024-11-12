@@ -1,0 +1,9 @@
+[project]
+name = "qcdataset"
+version = "0.1.0"
+description = "A Python for dataset scanning in quantum chemistry"
+dependencies = []
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
