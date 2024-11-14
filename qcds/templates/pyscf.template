@@ -1,0 +1,26 @@
+from pyscf import gto, dft, lib
+
+import time
+
+time_start = time.time()
+
+lib.num_threads($num_threads)
+
+mol = gto.M(
+    atom = """$atom""",
+    basis = "$basis",
+    charge = $charge,
+    spin = $spin,
+    unit = "Angstrom",
+    verbose = 8,
+)
+
+ks = dft.KS(mol)
+ks.xc = "$xc"
+ks.kernel()
+
+time_end = time.time()
+time_total = time_end - time_start
+print(f"time start: {time_start}")
+print(f"time end: {time_end}")
+print(f"time total: {time_total}")

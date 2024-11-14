@@ -1,1 +1,1 @@
-# qc_dataset
+# Quantum Chemistry Dataset Scan (QCDS)

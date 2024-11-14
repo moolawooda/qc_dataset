@@ -1,0 +1,36 @@
+INPUT_PARAMETERS
+#Parameters (1.General)
+suffix                  abacus
+pseudo_dir              $pseudo_dir
+calculation             $calculation
+nspin                   $nspin
+$nupdown_tag                $nupdown
+symmetry                0
+dft_functional          $dft_functional
+
+#Parameters (2.Iteration)
+ecutwfc                 $ecutwfc
+scf_thr                 1e-8
+scf_nmax                50
+
+#Parameters (3.Basis)
+basis_type              pw
+gamma_only              1
+
+#Parameters (4.Smearing)
+smearing_method         fixed    # in consistent with gaussian
+
+#Parameters (5.Mixing)
+mixing_type             broyden
+mixing_beta             0.2
+mixing_beta_mag         0.2
+mixing_gg0              0
+mixing_gg0_mag          0
+
+#Parameters (6.Output)
+out_chg                 -1
+
+#Parameters (999.Convergence_related)
+ks_solver              dav_subspace
+init_wfc               atomic
+

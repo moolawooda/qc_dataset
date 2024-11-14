@@ -1,0 +1,11 @@
+%mem=$mem
+%nproc=$nproc
+%chk=$chk
+$command
+
+$titlecard
+
+$xyz
+
+$extra
+
