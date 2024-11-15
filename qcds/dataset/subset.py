@@ -488,6 +488,7 @@ class SubSet:
                     self.mole_eng.update({mole.name: EngUnit(eng, unit="Hartree")})
 
     def output_read(self, software: str, path: str, prefix: str, suffix: str):
+        self.mole_configs = self.read_moleconfigs(self.geom_path, self.list_file)
         self.out_path = os.path.join(path, f"{prefix}_{software}_{self.name}_{suffix}")
         if not os.path.exists(self.out_path):
             raise FileNotFoundError(f"Output folder {self.out_path} not found")
@@ -505,7 +506,6 @@ class SubSet:
                 raise ValueError("Software not supported")
 
     def eval(self, target_unit: str = "kcal/mol", output_file: str = "eval_result.csv"):
-        self.mole_configs = self.read_moleconfigs(self.geom_path, self.list_file)
         self.dataset_eval = self.read_dataseteval(self.dataset_eval_file)
 
         eval_result: list[list] = [["name", "eng_ref", "eng_calc", "eng_err"]]
