@@ -107,16 +107,16 @@ class SubSet:
         with open(csv_file, "r", newline="") as f:
             reader = csv.reader(f)
 
-        eval_list: list = []
+            eval_list: list = []
 
-        for row in reader:
-            name = row[0]
-            eng_ref = EngUnit(float(row[-1]), unit=eng_unit)
-            moles = row[2:-1:2]
-            stoichs = list(map(int, row[1:-1:2]))
-            eval_list.append(
-                {"name": name, "eng_ref": eng_ref, "moles": moles, "stoichs": stoichs}
-            )
+            for row in reader:
+                name = row[0]
+                eng_ref = EngUnit(float(row[-1]), unit=eng_unit)
+                moles = row[2:-1:2]
+                stoichs = list(map(int, row[1:-1:2]))
+                eval_list.append(
+                    {"name": name, "eng_ref": eng_ref, "moles": moles, "stoichs": stoichs}
+                )
 
         return eval_list
 
