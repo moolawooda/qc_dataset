@@ -442,7 +442,14 @@ class SubSet:
 
         print("Done")
 
-    def input_gen(self, software: str, path: str, prefix: str, suffix: str):
+    def input_gen(
+        self,
+        software: str,
+        path: str,
+        prefix: str,
+        suffix: str,
+        force_gen: bool = False,
+    ):
         """generate input files for different quantum chemistry software packages
 
         Args:
@@ -451,6 +458,8 @@ class SubSet:
             prefix (str): prefix of the input files folder
             suffix (str): suffix of the input files folder
                 The input files will be stored in f"{path}/{prefix}_{software}_{subset}_{suffix}"
+            force_gen (bool, optional): Defaults to False. If True, the input files will
+                be generated even if the folder exists.
 
         Raises:
             ValueError: _description_
@@ -462,6 +471,11 @@ class SubSet:
         )
         if not os.path.exists(self.input_path):
             os.makedirs(self.input_path)
+        else:
+            # if input folder exists, skip the generation
+            if not force_gen:
+                print(f"Input folder {self.input_path} exists, skip the generation")
+                return None
 
         match software.lower():
             case "abacus":
