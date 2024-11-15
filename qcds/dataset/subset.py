@@ -222,7 +222,7 @@ class SubSet:
 
             potential_str = ""
             xyz_str = ""
-            for atom, coord in mole.get_atom_dict().items():
+            for atom, coord in mole.atom_dict.items():
                 xyz_str += f"{atom}\n0\n{len(coord)}\n{
                     ''.join(
                         [
