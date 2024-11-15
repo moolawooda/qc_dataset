@@ -64,8 +64,8 @@ class MoleConfig:
         with open(xyz_filename, "r") as f:
             lines = f.readlines()
         name = xyz_filename[:-4]
-        num_atoms = int(lines[1].strip())
-        charge, spin = map(int, lines[2].strip().split())
+        num_atoms = int(lines[0].strip())
+        charge, spin = map(int, lines[1].strip().split())
         pos_list = []
         for line in lines[2 : 2 + num_atoms + 1]:
             atom, x, y, z = line.strip().split()

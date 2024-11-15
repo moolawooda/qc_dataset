@@ -59,7 +59,7 @@ class SubSet:
         """
         if list_file is None:
             return [
-                MoleConfig.from_xyz(f)
+                MoleConfig.from_xyz(os.path.join(geom_path, f))
                 for f in os.listdir(geom_path)
                 if f.endswith(".xyz")
             ]
@@ -67,7 +67,7 @@ class SubSet:
             with open(list_file, "r") as f:
                 moles = f.readlines()
             return [
-                MoleConfig.from_xyz(f)
+                MoleConfig.from_xyz(os.path.join(geom_path, f))
                 for f in moles
                 if f.endswith(".xyz") and os.path.exists(os.path.join(geom_path, f))
             ]
