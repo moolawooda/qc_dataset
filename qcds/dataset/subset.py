@@ -195,8 +195,8 @@ class SubSet:
         stru_template = Template(stru_file.decode("utf-8"))
         kpt_file = pkg.resource_string("qcds", "templates/abacus_kpt.template")
         kpt_template = Template(kpt_file.decode("utf-8"))
-        sh_file = pkg.resource_string("qcds", "templates/sh.template")
-        sh_template = Template(sh_file.decode("utf-8"))
+        slurm_file = pkg.resource_string("qcds", "templates/slurm.template")
+        slurm_template = Template(slurm_file.decode("utf-8"))
 
         for mole in self.mole_configs:
             new_folder = os.path.join(self.input_path, mole.name)
@@ -259,7 +259,7 @@ class SubSet:
             with open(os.path.join(new_folder, "KPT"), "w") as f:
                 f.write(kpt_template.substitute(params_kpt))
             with open(os.path.join(new_folder, f"{mole.name}.sh"), "w") as f:
-                f.write(sh_template.substitute(params_slurm))
+                f.write(slurm_template.substitute(params_slurm))
 
         print("Done!")
 
@@ -268,8 +268,8 @@ class SubSet:
 
         input_file = pkg.resource_string("qcds", "templates/pyscf.template")
         input_template = Template(input_file.decode("utf-8"))
-        sh_file = pkg.resource_string("qcds", "templates/sh.template")
-        sh_template = Template(sh_file.decode("utf-8"))
+        slurm_file = pkg.resource_string("qcds", "templates/slurm.template")
+        slurm_template = Template(slurm_file.decode("utf-8"))
 
         for mole in self.mole_configs:
             new_folder = self.input_path
@@ -297,7 +297,7 @@ class SubSet:
             with open(os.path.join(new_folder, f"{mole.name}.py"), "w") as f:
                 f.write(input_template.substitute(params_pyscf))
             with open(os.path.join(new_folder, f"{mole.name}.sh"), "w") as f:
-                f.write(sh_template.substitute(params_slurm))
+                f.write(slurm_template.substitute(params_slurm))
 
         print("Done!")
 
@@ -306,8 +306,8 @@ class SubSet:
 
         input_file = pkg.resource_string("qcds", "templates/gaussian.template")
         input_template = Template(input_file.decode("utf-8"))
-        sh_file = pkg.resource_string("qcds", "templates/sh.template")
-        sh_template = Template(sh_file.decode("utf-8"))
+        slurm_file = pkg.resource_string("qcds", "templates/slurm.template")
+        slurm_template = Template(slurm_file.decode("utf-8"))
 
         for mole in self.mole_configs:
             new_folder = self.input_path
@@ -336,7 +336,7 @@ class SubSet:
             with open(os.path.join(new_folder, f"{mole.name}.gjf"), "w") as f:
                 f.write(input_template.substitute(params_gaussian))
             with open(os.path.join(new_folder, f"{mole.name}.sh"), "w") as f:
-                f.write(sh_template.substitute(params_slurm))
+                f.write(slurm_template.substitute(params_slurm))
 
         print("Done!")
 
@@ -345,8 +345,8 @@ class SubSet:
 
         input_file = pkg.resource_string("qcds", "templates/psi4.template")
         input_template = Template(input_file.decode("utf-8"))
-        sh_file = pkg.resource_string("qcds", "templates/sh.template")
-        sh_template = Template(sh_file.decode("utf-8"))
+        slurm_file = pkg.resource_string("qcds", "templates/slurm.template")
+        slurm_template = Template(slurm_file.decode("utf-8"))
 
         for mole in self.mole_configs:
             new_folder = self.input_path
@@ -373,7 +373,7 @@ class SubSet:
             with open(os.path.join(new_folder, f"{mole.name}.py"), "w") as f:
                 f.write(input_template.substitute(params_psi4))
             with open(os.path.join(new_folder, f"{mole.name}.sh"), "w") as f:
-                f.write(sh_template.substitute(params_slurm))
+                f.write(slurm_template.substitute(params_slurm))
 
         print("Done")
 
