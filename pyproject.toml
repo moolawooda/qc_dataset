@@ -1,8 +1,10 @@
 [project]
-name = "qcdataset"
+name = "qcds"
 version = "0.1.0"
 description = "A Python for dataset scanning in quantum chemistry"
 dependencies = []
+license = {file = "LICENSE"}
+readme = "README.md"
 
 [build-system]
 requires = ["setuptools"]
