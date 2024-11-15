@@ -6,8 +6,8 @@ file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 
 class AtomPosition:
-    """one atom's position in a molecule.
-    """
+    """one atom's position in a molecule."""
+
     DEFAULT_UNIT = "angstrom"
 
     def __init__(
@@ -57,12 +57,12 @@ class AtomPosition:
 
     def __str__(self) -> str:
         return f"{self.atom}  {self.x} {self.y} {self.z}"
-    
+
     def __hash__(self) -> int:
         return hash((self.atom, self.x, self.y, self.z, self.unit))
-    
+
     def unit_convert(self, target_unit: str = DEFAULT_UNIT, copy: bool = False):
-        pass # TODO
+        pass  # TODO
 
 
 if __name__ == "__main__":

@@ -41,6 +41,23 @@ class SubSet:
             list_file (str | None, optional): Defaults to None. The list of your
                 geometry files. If None, all *.xyz files in geom_path will be used.
 
+        Note:
+            1. The geom files should be in xyz format with following content:
+                n_atoms
+                charge spin(gaussian-type)
+                atom1 x1 y1 z1
+                atom2 x2 y2 z2
+                ...
+            2. The dataseteval file should be in csv format with following columns:
+                name_of_this_item, (stoichiometry_number, mole_name)*n, eng_ref
+                name_of_this_item, (stoichiometry_number, mole_name)*n, eng_ref
+                ...
+            3. The list file should be a text file with the names of your geometry
+                files. Each line should be a geometry file name:
+                mole1.xyz
+                mole2.xyz
+                ...
+
         """
         self.name = name
 
@@ -117,7 +134,12 @@ class SubSet:
                 moles = row[2:-1:2]
                 stoichs = list(map(int, row[1:-1:2]))
                 eval_list.append(
-                    {"name": name, "eng_ref": eng_ref, "moles": moles, "stoichs": stoichs}
+                    {
+                        "name": name,
+                        "eng_ref": eng_ref,
+                        "moles": moles,
+                        "stoichs": stoichs,
+                    }
                 )
 
         return eval_list
@@ -421,6 +443,18 @@ class SubSet:
         print("Done")
 
     def input_gen(self, software: str, path: str, prefix: str, suffix: str):
+        """generate input files for different quantum chemistry software packages
+
+        Args:
+            software (str): now support "abacus", "pyscf", "gaussian", or "psi4"
+            path (str): the path to store the input files
+            prefix (str): prefix of the input files folder
+            suffix (str): suffix of the input files folder
+                The input files will be stored in f"{path}/{prefix}_{software}_{subset}_{suffix}"
+
+        Raises:
+            ValueError: _description_
+        """
         self.mole_configs = self.read_moleconfigs(self.geom_path, self.list_file)
 
         self.input_path = os.path.join(
@@ -488,6 +522,19 @@ class SubSet:
                     self.mole_eng.update({mole.name: EngUnit(eng, unit="Hartree")})
 
     def output_read(self, software: str, path: str, prefix: str, suffix: str):
+        """read the output files from different quantum chemistry software packages
+
+        Args:
+            software (str): now support "abacus", "pyscf", "gaussian", or "psi4"
+            path (str): the path to store the output files
+            prefix (str): the prefix of the output files folder
+            suffix (str): the suffix of the output files folder
+                The output files should be stored in f"{path}/{prefix}_{software}_{subset}_{suffix}"
+
+        Raises:
+            FileNotFoundError: _description_
+            ValueError: _description_
+        """
         self.mole_configs = self.read_moleconfigs(self.geom_path, self.list_file)
         self.out_path = os.path.join(path, f"{prefix}_{software}_{self.name}_{suffix}")
         if not os.path.exists(self.out_path):
@@ -505,8 +552,18 @@ class SubSet:
             case _:
                 raise ValueError("Software not supported")
 
-    def eval(self, target_unit: str = "kcal/mol", output_file: str = "eval_result.csv"):
+    def eval(self, target_unit: str = "kcal/mol", output_file: str | None = None):
+        """evaluate the results based on the dataseteval file
+
+        Args:
+            target_unit (str, optional): Defaults to "kcal/mol".
+            output_file (str | None, optional): Defaults to None, which means the
+                results will be stored in f"{self.name}_eval.csv".
+        """
         self.dataset_eval = self.read_dataseteval(self.dataset_eval_file)
+
+        if output_file is None:
+            output_file = f"{self.name}_eval.csv"
 
         eval_result: list[list] = [["name", "eng_ref", "eng_calc", "eng_err"]]
         for item in self.dataset_eval:
