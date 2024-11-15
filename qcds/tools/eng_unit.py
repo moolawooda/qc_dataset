@@ -187,6 +187,7 @@ class EngUnit:
             return other.__mod__(self)
 
     def __iadd__(self, other):
+        # TODO: check all the in-place operations!!!
         if not isinstance(other, EngUnit):
             raise TypeError(
                 "The object to be added must be an EngUnit object: "
@@ -197,7 +198,9 @@ class EngUnit:
                 "The two objects must have the same order of unit: "
                 f"one is {self.order}, the other is {other.order}"
             )
-        self.energy += other.unit_convert("Hartree", copy=False).energy
+        self.unit_convert("Hartree", copy=False)
+        other.unit_convert("Hartree", copy=False)
+        self.energy += other.energy
         return self
 
     def __isub__(self, other):
@@ -211,7 +214,9 @@ class EngUnit:
                 "The two objects must have the same order of unit: "
                 f"one is {self.order}, the other is {other.order}"
             )
-        self.energy -= other.unit_convert("Hartree", copy=False).energy
+        self.unit_convert("Hartree", copy=False)
+        other.unit_convert("Hartree", copy=False)
+        self.energy -= other.energy
         return self
 
     def __imul__(self, other):
@@ -219,7 +224,9 @@ class EngUnit:
             self.energy *= other
             return self
         elif isinstance(other, EngUnit):
-            self.energy *= other.unit_convert("Hartree", copy=False).energy
+            self.unit_convert("Hartree", copy=False)
+            other.unit_convert("Hartree", copy=False)
+            self.energy *= other.energy
             self.order += other.order
             return self
         else:
@@ -233,7 +240,9 @@ class EngUnit:
             self.energy /= other
             return self
         elif isinstance(other, EngUnit):
-            self.energy /= other.unit_convert("Hartree", copy=False).energy
+            self.unit_convert("Hartree", copy=False)
+            other.unit_convert("Hartree", copy=False)
+            self.energy /= other.energy
             self.order -= other.order
             return self
         else:
@@ -247,7 +256,9 @@ class EngUnit:
             self.energy //= other
             return self
         elif isinstance(other, EngUnit):
-            self.energy //= other.unit_convert("Hartree", copy=False).energy
+            self.unit_convert("Hartree", copy=False)
+            other.unit_convert("Hartree", copy=False)
+            self.energy //= other.energy
             self.order -= other.order
             return self
         else:
@@ -261,7 +272,9 @@ class EngUnit:
             self.energy %= other
             return self
         elif isinstance(other, EngUnit):
-            self.energy %= other.unit_convert("Hartree", copy=False).energy
+            self.unit_convert("Hartree", copy=False)
+            other.unit_convert("Hartree", copy=False)
+            self.energy %= other.energy
             self.order -= other.order
             return self
         else:
@@ -421,6 +434,7 @@ class EngUnit:
             raise ValueError("Invalid unit")
 
     def unit_convert(self, target_unit: str, copy: bool = True):
+        # TODO check the in-place conversion
         target_unit = self.unit_handler(target_unit)
 
         if self.unit == target_unit:
@@ -435,6 +449,7 @@ class EngUnit:
             # change the unit of the original object in place
             self.energy = self.energy * (factor**self.order)
             self.unit = target_unit
+            return self
 
     @staticmethod
     def unit_convert_factor(old_unit: str, new_unit: str) -> int | float:
@@ -488,6 +503,9 @@ if __name__ == "__main__":
     print(g)
     print(h)
     print(y)
+
+    h += g
+    print(h)
 
     g.unit_convert("kcal/mol", copy=False)
     print(g)

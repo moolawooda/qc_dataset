@@ -2,6 +2,10 @@
 This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+This module defines the SubSet class, which is used to manage a subset of the
+dataset. It can generate input files for different quantum chemistry software
+packages, run the calculations, and evaluate the results.
 """
 
 import csv
@@ -16,6 +20,11 @@ from qcds.tools.eng_unit import EngUnit
 
 
 class SubSet:
+    """a class to manage a subset of the dataset. It can generate input files
+    for different quantum chemistry software packages, run the calculations,
+    and evaluate the results.
+    """
+
     def __init__(
         self,
         name: str,
@@ -23,6 +32,16 @@ class SubSet:
         geom_path: str,
         list_file: str | None = None,
     ):
+        """initialize the class
+
+        Args:
+            name (str): the name of your subset
+            dataset_eval_file (str): the dataseteval file
+            geom_path (str): path to your geometry files
+            list_file (str | None, optional): Defaults to None. The list of your
+                geometry files. If None, all *.xyz files in geom_path will be used.
+
+        """
         self.name = name
 
         self.dataset_eval_file = dataset_eval_file
@@ -113,6 +132,28 @@ class SubSet:
         lattice_y: float | None = None,
         lattice_z: float | None = None,
     ):
+        """define the input parameters for Abacus
+
+        Args:
+            pseudo_dir (str): path to your pseudo potential files
+            pseudo_file_syntax (str): the syntax of your pseudo potential files,
+                if the element name appears in the file name, use "{}" as a placeholder
+            calculation (str): calculation type
+            dft_functional (str): DFT functional
+            ecutwfc (int): ecut_wfn
+            lattice (float | None, optional): Defaults to None.
+            lattice_x (float | None, optional): Defaults to None.
+            lattice_y (float | None, optional): Defaults to None.
+            lattice_z (float | None, optional): Defaults to None.
+                The lattice parameters can be defined in two ways:
+                1. lattice: all lattice parameters are the same
+                2. lattice_x, lattice_y, lattice_z: each lattice parameter is defined
+
+
+        Raises:
+            ValueError: _description_
+            ValueError: _description_
+        """
         self.abacus_pseudo_file_syntax = pseudo_file_syntax
 
         self.params_abacus_input = {
