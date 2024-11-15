@@ -552,7 +552,7 @@ class SubSet:
             case _:
                 raise ValueError("Software not supported")
 
-    def eval(self, target_unit: str = "kcal/mol", output_file: str | None = None):
+    def evaluate(self, target_unit: str = "kcal/mol", output_file: str | None = None):
         """evaluate the results based on the dataseteval file
 
         Args:
