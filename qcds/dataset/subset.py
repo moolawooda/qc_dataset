@@ -167,7 +167,7 @@ class SubSet:
         partition: str,
         qos: str,
         nodes: int,
-        task_per_node: int,
+        tasks_per_node: int,
         cores_per_task: int,
         slurm_output: str = "job.%j.out",
     ):
@@ -175,7 +175,7 @@ class SubSet:
             "partition": partition,
             "qos": qos,
             "nodes": nodes,
-            "task_per_node": task_per_node,
+            "tasks_per_node": tasks_per_node,
             "cores_per_task": cores_per_task,
             "slurm_output": slurm_output,
         }
