@@ -63,9 +63,9 @@ class MoleConfig:
 
     @classmethod
     def from_xyz(cls, xyz_filename: str):
+        name = os.path.basename(xyz_filename)[:-4]
         with open(xyz_filename, "r") as f:
             lines = f.readlines()
-        name = os.path.basename(xyz_filename)[:-4]
         num_atoms = int(lines[0].strip())
         charge, spin = map(int, lines[1].strip().split())
         pos_list = []

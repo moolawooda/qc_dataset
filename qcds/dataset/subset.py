@@ -75,6 +75,8 @@ class SubSet:
 
         Args:
             geom_path (str): path to the geometry files
+            list_file (str | None, optional): Defaults to None. The list of your
+                geometry files. If None, all *.xyz files in geom_path will be used.
         """
         if list_file is None:
             return [
@@ -503,6 +505,7 @@ class SubSet:
                 raise ValueError("Software not supported")
 
     def eval(self, target_unit: str = "kcal/mol", output_file: str = "eval_result.csv"):
+        self.mole_configs = self.read_moleconfigs(self.geom_path, self.list_file)
         self.dataset_eval = self.read_dataseteval(self.dataset_eval_file)
 
         eval_result: list[list] = [["name", "eng_ref", "eng_calc", "eng_err"]]
