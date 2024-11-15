@@ -4,6 +4,8 @@ License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at https://mozilla.org/MPL/2.0/.
 """
 
+import os
+
 from qcds.dataset.atom_pos import AtomPosition
 
 
@@ -63,7 +65,7 @@ class MoleConfig:
     def from_xyz(cls, xyz_filename: str):
         with open(xyz_filename, "r") as f:
             lines = f.readlines()
-        name = xyz_filename[:-4]
+        name = os.path.basename(xyz_filename)[:-4]
         num_atoms = int(lines[0].strip())
         charge, spin = map(int, lines[1].strip().split())
         pos_list = []
