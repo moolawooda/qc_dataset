@@ -105,9 +105,9 @@ class SubSet:
             with open(list_file, "r") as f:
                 moles = f.readlines()
             return [
-                MoleConfig.from_xyz(os.path.join(geom_path, f))
+                MoleConfig.from_xyz(os.path.join(geom_path, f"{f.strip()}.xyz"))
                 for f in moles
-                if f.endswith(".xyz") and os.path.exists(os.path.join(geom_path, f))
+                if os.path.exists(os.path.join(geom_path, f"{f.strip()}.xyz"))
             ]
 
     @staticmethod
