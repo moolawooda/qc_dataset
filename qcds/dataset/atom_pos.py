@@ -53,10 +53,10 @@ class AtomPosition:
         self.unit = unit
 
     def __repr__(self) -> str:
-        return f"AtomPosition({self.atom}, {self.x} {self.y} {self.z}, {self.unit})"
+        return f"AtomPosition({self.atom}, {self.x:f} {self.y:f} {self.z:f}, {self.unit})"
 
     def __str__(self) -> str:
-        return f"{self.atom}  {self.x} {self.y} {self.z}"
+        return f"{self.atom}  {self.x:f} {self.y:f} {self.z:f}"
 
     def __hash__(self) -> int:
         return hash((self.atom, self.x, self.y, self.z, self.unit))
@@ -66,6 +66,6 @@ class AtomPosition:
 
 
 if __name__ == "__main__":
-    atom = AtomPosition("C", 0.0, 0.0, 0.0)
+    atom = AtomPosition("C", 0.0, 0.0, 0.000005)
     print(atom)
     print(repr(atom))
