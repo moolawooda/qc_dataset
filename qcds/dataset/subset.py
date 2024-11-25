@@ -518,7 +518,7 @@ class SubSet:
     def output_read_gaussian(self):
         for mole in self.mole_configs:
             out_folder = self.out_path
-            with open(os.path.join(out_folder, f"{mole.name}.out"), "r") as f:
+            with open(os.path.join(out_folder, f"{mole.name}.log"), "r") as f:
                 lines = f.readlines()
             for line in lines:
                 if line.startswith(" SCF Done:"):
