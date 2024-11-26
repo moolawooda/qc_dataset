@@ -150,12 +150,11 @@ class SubSet:
         pseudo_file_syntax: str,
         calculation: str,
         dft_functional: str,
-        ecutwfc: int,
         lattice: float | None = None,
         lattice_x: float | None = None,
         lattice_y: float | None = None,
         lattice_z: float | None = None,
-        fixed_lattice: bool = False,
+        fixed_lattice: bool = True,
         lattice_scale_factor: int | float | None = None,
         ecut_default: int | float | None = None,
         ecut_dict: dict | None = None,
@@ -187,7 +186,6 @@ class SubSet:
             "pseudo_dir": pseudo_dir,
             "calculation": calculation,
             "dft_functional": dft_functional,
-            "ecutwfc": ecutwfc,
         }
 
         self.params_abacus_inter = {
