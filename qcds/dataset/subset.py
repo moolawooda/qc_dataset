@@ -73,10 +73,10 @@ class SubSet:
         self.dataset_eval: list[dict] = []
         self.mole_eng: dict = {}
 
-        self.abacus_pseudo_file_syntax: str = ""
         self.params_abacus_input: dict = {}
         self.params_abacus_stru: dict = {}
         self.params_abacus_kpt: dict = {}
+        self.params_abacus_inter: dict = {}
         self.params_pyscf: dict = {}
         self.params_gaussian: dict = {}
         self.params_psi4: dict = {}
@@ -155,6 +155,10 @@ class SubSet:
         lattice_x: float | None = None,
         lattice_y: float | None = None,
         lattice_z: float | None = None,
+        fixed_lattice: bool = False,
+        lattice_scale_factor: int | float | None = None,
+        ecut_default: int | float | None = None,
+        ecut_dict: dict | None = None,
     ):
         """define the input parameters for Abacus
 
@@ -178,7 +182,6 @@ class SubSet:
             ValueError: _description_
             ValueError: _description_
         """
-        self.abacus_pseudo_file_syntax = pseudo_file_syntax
 
         self.params_abacus_input = {
             "pseudo_dir": pseudo_dir,
@@ -187,23 +190,61 @@ class SubSet:
             "ecutwfc": ecutwfc,
         }
 
+        self.params_abacus_inter = {
+            "pseudo_file_syntax": pseudo_file_syntax,
+        }
+
         match (lattice, lattice_x, lattice_y, lattice_z):
             case (None, None, None, None):
                 raise ValueError("Lattice parameters are missing")
             case (None, _, _, _):
-                self.params_abacus_stru = {
-                    "LATTICE_X": lattice_x,
-                    "LATTICE_Y": lattice_y,
-                    "LATTICE_Z": lattice_z,
-                }
+                self.params_abacus_inter.update(
+                    {
+                        "lattice_x": lattice_x,
+                        "lattice_y": lattice_y,
+                        "lattice_z": lattice_z,
+                    }
+                )
             case (_, None, None, None):
-                self.params_abacus_stru = {
-                    "LATTICE_X": lattice,
-                    "LATTICE_Y": lattice,
-                    "LATTICE_Z": lattice,
-                }
+                self.params_abacus_inter.update(
+                    {
+                        "lattice_x": lattice,
+                        "lattice_y": lattice,
+                        "lattice_z": lattice,
+                    }
+                )
             case _:
                 raise ValueError("Lattice parameters are not consistent")
+
+        match (fixed_lattice, lattice_scale_factor):
+            case (True, None):
+                self.params_abacus_inter.update({"fixed_lattice": True})
+            case (False, lattice_scale_factor):
+                self.params_abacus_inter.update(
+                    {
+                        "fixed_lattice": False,
+                        "lattice_scale_factor": lattice_scale_factor,
+                    }
+                )
+            case (False, None):
+                raise ValueError("lattice_scale_factor is missing")
+            case _:
+                raise ValueError(
+                    "fixed_lattice and lattice_scale_factor are not consistent"
+                )
+
+        match (ecut_default, ecut_dict):
+            case (ecut_default, dict(ecut_dict)):
+                ecut_dict.update({"default": ecut_default})
+                self.params_abacus_inter.update({"ecut_dict": ecut_dict})
+            case (None, dict(ecut_dict)):
+                self.params_abacus_inter.update({"ecut_dict": ecut_dict})
+            case (ecut_default, None):
+                self.params_abacus_inter.update(
+                    {"ecut_dict": {"default": ecut_default}}
+                )
+            case _:
+                raise ValueError("ecut_default and ecut_dict are not consistent")
 
     def params_def_pyscf(self, num_threads: int, basis: str, xc: str):
         self.params_pyscf = {
@@ -252,6 +293,39 @@ class SubSet:
                 raise FileNotFoundError(f"Potential file {pp_file} not found")
             return pp_file
 
+        def cal_max_distance(mole: MoleConfig) -> tuple[float, float, float]:
+            max_dist_x = 0.0
+            max_dist_y = 0.0
+            max_dist_z = 0.0
+            for i in range(len(mole.pos_list)):
+                for j in range(i + 1, len(mole.pos_list)):
+                    # convert to Bohr
+                    dist_x = abs(mole.pos_list[i].x - mole.pos_list[j].x) * 1.889726125
+                    dist_y = abs(mole.pos_list[i].y - mole.pos_list[j].y) * 1.889726125
+                    dist_z = abs(mole.pos_list[i].z - mole.pos_list[j].z) * 1.889726125
+                    if dist_x > max_dist_x:
+                        max_dist_x = dist_x
+                    if dist_y > max_dist_y:
+                        max_dist_y = dist_y
+                    if dist_z > max_dist_z:
+                        max_dist_z = dist_z
+            return max_dist_x, max_dist_y, max_dist_z
+
+        def cal_min_ecut(mole: MoleConfig, ecut_dict: dict) -> int | float:
+            min_ecut = 0.0
+            atom_list = mole.atom_dict.keys()
+            for atom in atom_list:
+                try:
+                    ecut = ecut_dict[atom]
+                except KeyError:
+                    try:
+                        ecut = ecut_dict["default"]
+                    except KeyError:
+                        raise KeyError("ecut_dict is not defined correctly")
+                if ecut > min_ecut:
+                    min_ecut = ecut
+            return min_ecut
+
         print("Generating input files for Abacus...")
 
         input_file = pkg.resource_string("qcds", "templates/abacus_input.template")
@@ -285,6 +359,39 @@ class SubSet:
                 }
             )
 
+            if self.params_abacus_inter["fixed_lattice"]:
+                params_stru.update(
+                    {
+                        "LATTICE_X": self.params_abacus_inter["lattice_x"],
+                        "LATTICE_Y": self.params_abacus_inter["lattice_y"],
+                        "LATTICE_Z": self.params_abacus_inter["lattice_z"],
+                    }
+                )
+            else:
+                max_dist_x, max_dist_y, max_dist_z = cal_max_distance(mole)
+                params_stru.update(
+                    {
+                        "LATTICE_X": max(
+                            self.params_abacus_inter["lattice_x"],
+                            max_dist_x
+                            * self.params_abacus_inter["lattice_scale_factor"],
+                        ),
+                        "LATTICE_Y": max(
+                            self.params_abacus_inter["lattice_y"],
+                            max_dist_y
+                            * self.params_abacus_inter["lattice_scale_factor"],
+                        ),
+                        "LATTICE_Z": max(
+                            self.params_abacus_inter["lattice_z"],
+                            max_dist_z
+                            * self.params_abacus_inter["lattice_scale_factor"],
+                        ),
+                    }
+                )
+
+            min_ecut = cal_min_ecut(mole, self.params_abacus_inter["ecut_dict"])
+            params_input.update({"ecutwfc": min_ecut})
+
             potential_str = ""
             xyz_str = ""
             for atom, coord in mole.atom_dict.items():
@@ -296,7 +403,9 @@ class SubSet:
                     )
                 }"
                 pp = get_pp(
-                    atom, params_input["pseudo_dir"], self.abacus_pseudo_file_syntax
+                    atom,
+                    params_input["pseudo_dir"],
+                    self.params_abacus_inter["pseudo_file_syntax"],
                 )
                 potential_str += f"{atom} {elem_mass[atom]} {pp}\n"
 
@@ -491,6 +600,7 @@ class SubSet:
 
     def output_read_abacus(self):
         for mole in self.mole_configs:
+            print(f"> {mole.name}")
             out_folder = os.path.join(self.out_path, mole.name)
             with open(
                 os.path.join(
@@ -507,6 +617,7 @@ class SubSet:
 
     def output_read_pyscf(self):
         for mole in self.mole_configs:
+            print(f"> {mole.name}")
             out_folder = self.out_path
             with open(os.path.join(out_folder, f"{mole.name}.out"), "r") as f:
                 lines = f.readlines()
@@ -517,6 +628,8 @@ class SubSet:
 
     def output_read_gaussian(self):
         for mole in self.mole_configs:
+            print(f"> {mole.name}")
+            conv_flag = False
             out_folder = self.out_path
             with open(os.path.join(out_folder, f"{mole.name}.log"), "r") as f:
                 lines = f.readlines()
@@ -524,9 +637,13 @@ class SubSet:
                 if line.startswith(" SCF Done:"):
                     eng = float(line.split()[4])
                     self.mole_eng.update({mole.name: EngUnit(eng, unit="Hartree")})
+                    conv_flag = True
+            if not conv_flag:
+                print(f"Calculation for {mole.name} not converged")
 
     def output_read_psi4(self):
         for mole in self.mole_configs:
+            print(f"> {mole.name}")
             out_folder = self.out_path
             with open(os.path.join(out_folder, f"{mole.name}.out"), "r") as f:
                 lines = f.readlines()
