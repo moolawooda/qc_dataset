@@ -599,11 +599,12 @@ class SubSet:
     def output_read_abacus(self):
         for mole in self.mole_configs:
             print(f"> {mole.name}")
+            conv_flag = False
             out_folder = os.path.join(self.out_path, mole.name)
             with open(
                 os.path.join(
                     out_folder,
-                    f"OUT.abacus/running_{self.params_abacus_input["calculation"]}.log",
+                    f"OUT.abacus/running_{self.params_abacus_input["calculation"].lower()}.log",
                 ),
                 "r",
             ) as f:
@@ -612,6 +613,10 @@ class SubSet:
                 if line.startswith(" !FINAL_ETOT_IS "):
                     eng = float(line.split()[1])
                     self.mole_eng.update({mole.name: EngUnit(eng, unit="eV")})
+                if line.startswith(" charge density convergence is achieved"):
+                    conv_flag = True
+            if not conv_flag:
+                print(f"Calculation for {mole.name} not converged")
 
     def output_read_pyscf(self):
         for mole in self.mole_configs:
