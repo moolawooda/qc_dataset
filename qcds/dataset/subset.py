@@ -251,11 +251,12 @@ class SubSet:
             "xc": xc,
         }
 
-    def params_def_gaussian(self, mem: str, nproc: int, command: str):
+    def params_def_gaussian(self, mem: str, nproc: int, command: str, extra: str = ""):
         self.params_gaussian = {
             "mem": mem,
             "nproc": nproc,
             "command": command,
+            "extra": extra,
         }
 
     def params_def_psi4(self, num_threads: int, memory: str, basis: str, xc: str):
@@ -494,7 +495,6 @@ class SubSet:
                     "chk": f"{mole.name}.chk",
                     "xyz": str(mole),
                     "titlecard": mole.name,
-                    "extra": "",
                 }
             )
 
