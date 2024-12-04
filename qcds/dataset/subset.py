@@ -707,17 +707,23 @@ class SubSet:
             name = item["name"]
             eng_ref: EngUnit = item["eng_ref"]
 
-            eng_calc = EngUnit(0)
-            for mole, stoich in zip(item["moles"], item["stoichs"]):
-                eng_calc += self.mole_eng[mole] * stoich
+            try:
+                eng_calc = EngUnit(0)
+                for mole, stoich in zip(item["moles"], item["stoichs"]):
+                    eng_calc += self.mole_eng[mole] * stoich
 
-            eng_err: EngUnit = eng_calc - eng_ref
+                eng_err: EngUnit = eng_calc - eng_ref
 
-            eng_ref.unit_convert(target_unit, copy=False)
-            eng_calc.unit_convert(target_unit, copy=False)
-            eng_err.unit_convert(target_unit, copy=False)
+                eng_ref.unit_convert(target_unit, copy=False)
+                eng_calc.unit_convert(target_unit, copy=False)
+                eng_err.unit_convert(target_unit, copy=False)
 
-            eval_result.append([name, eng_ref.energy, eng_calc.energy, eng_err.energy])
+                eval_result.append([name, eng_ref.energy, eng_calc.energy, eng_err.energy])
+
+            except KeyError as e:
+                print(f"> Error: {e}")
+                print(f"Calculation for {name} not completed")
+                eval_result.append([name, eng_ref.energy, "N/A", "N/A"])
 
         with open(output_file, "w", newline="") as f:
             writer = csv.writer(f)
