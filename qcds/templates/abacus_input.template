@@ -5,6 +5,7 @@ pseudo_dir              $pseudo_dir
 calculation             $calculation
 nspin                   $nspin
 $nupdown_tag                $nupdown
+$nelec_delta_tag            $nelec_delta
 symmetry                0
 dft_functional          $dft_functional
 

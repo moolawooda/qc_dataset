@@ -350,11 +350,14 @@ class SubSet:
             params_slurm = self.params_slurm.copy()
 
             spin = mole.get_spin("pyscf")
+            charge = mole.charge
             params_input.update(
                 {
                     "nspin": 1 if (spin == 0) else 2,
                     "nupdown": spin,
                     "nupdown_tag": "#nupdown" if (spin == 0) else "nupdown ",
+                    "nelec_delta": -charge,
+                    "nelec_delta_tag": "#nelec_delta" if (charge == 0) else "nelec_delta ",
                 }
             )
 
