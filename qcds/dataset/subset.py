@@ -620,6 +620,7 @@ class SubSet:
                     conv_flag = True
             if not conv_flag:
                 print(f"Calculation for {mole.name} not converged")
+                self.mole_eng.update({mole.name: "N/A"})
 
     def output_read_pyscf(self):
         for mole in self.mole_configs:
@@ -646,6 +647,7 @@ class SubSet:
                     conv_flag = True
             if not conv_flag:
                 print(f"Calculation for {mole.name} not converged")
+                self.mole_eng.update({mole.name: "N/A"})
 
     def output_read_psi4(self):
         for mole in self.mole_configs:
@@ -710,6 +712,8 @@ class SubSet:
             try:
                 eng_calc = EngUnit(0)
                 for mole, stoich in zip(item["moles"], item["stoichs"]):
+                    if self.mole_eng[mole] == "N/A":
+                        raise TypeError(f"Calculation for {name} not converged")
                     eng_calc += self.mole_eng[mole] * stoich
 
                 eng_err: EngUnit = eng_calc - eng_ref
@@ -723,6 +727,11 @@ class SubSet:
             except KeyError as e:
                 print(f"> Error: {e}")
                 print(f"Calculation for {name} not completed")
+                eval_result.append([name, eng_ref.energy, "N/A", "N/A"])
+
+            except TypeError as e:
+                print(f"> Error: {e}")
+                print(f"Calculation for {name} not converged")
                 eval_result.append([name, eng_ref.energy, "N/A", "N/A"])
 
         with open(output_file, "w", newline="") as f:
