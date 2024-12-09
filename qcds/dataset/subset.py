@@ -704,6 +704,8 @@ class SubSet:
         if output_file is None:
             output_file = f"{self.name}_eval.csv"
 
+        print("\nEvaluating the results...")
+
         eval_result: list[list] = [["name", "eng_ref", "eng_calc", "eng_err"]]
         for item in self.dataset_eval:
             name = item["name"]
@@ -712,8 +714,6 @@ class SubSet:
             try:
                 eng_calc = EngUnit(0)
                 for mole, stoich in zip(item["moles"], item["stoichs"]):
-                    if self.mole_eng[mole] == "N/A":
-                        raise TypeError(f"Calculation for {name} not converged")
                     eng_calc += self.mole_eng[mole] * stoich
 
                 eng_err: EngUnit = eng_calc - eng_ref
