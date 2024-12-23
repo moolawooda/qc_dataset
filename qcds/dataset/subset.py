@@ -645,6 +645,10 @@ class SubSet:
                     eng = float(line.split()[4])
                     self.mole_eng.update({mole.name: EngUnit(eng, unit="Hartree")})
                     conv_flag = True
+                if "Convergence criterion not met" in line:
+                    conv_flag = False
+                if line.startswith(" Error termination"):
+                    conv_flag = False
             if not conv_flag:
                 print(f"Calculation for {mole.name} not converged")
                 self.mole_eng.update({mole.name: "N/A"})
